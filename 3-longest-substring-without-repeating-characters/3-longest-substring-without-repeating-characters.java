@@ -4,25 +4,23 @@ class Solution {
             return 0;
         }
 
-      int ptr1 = 0;
+     int ptr1 = 0;
         int ptr2 = 0;
+        int currentLength = 0;
         int maxLength = 0;
-        HashSet<Character> c = new HashSet<>();
+
+        Map<Character, Integer> cWithIdx = new HashMap<>();
 
         while (ptr2 < s.length()) {
-            if (!c.contains(s.charAt(ptr2))) {
-                c.add(s.charAt(ptr2));
-                ptr2++;
-            } else {
-                int currentLength = ptr2 - ptr1;
-                maxLength = Math.max(currentLength, maxLength);
-                c.remove(s.charAt(ptr1));
-                ptr1++;
+            if (cWithIdx.containsKey(s.charAt(ptr2))) {
+                // Update ptr1
+                ptr1 = Math.max(cWithIdx.get(s.charAt(ptr2)) + 1, ptr1);
             }
+            cWithIdx.put(s.charAt(ptr2), ptr2);
+            currentLength = ptr2 - ptr1 + 1;
+            maxLength = Math.max(currentLength, maxLength);
+            ptr2++;
         }
-
-        int currentLength = ptr2 - ptr1;
-        maxLength = Math.max(currentLength, maxLength);
 
         return maxLength;
     }
