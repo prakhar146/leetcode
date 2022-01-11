@@ -14,24 +14,27 @@
  * }
  */
 class Solution {
-        Map<TreeNode, Integer> diameter = new HashMap<>();
+        // Map<TreeNode, Integer> diameter = new HashMap<>();
+    int maxDiameter = 0;
     public int diameterOfBinaryTree(TreeNode root) {
-        if(root == null || (root.left == null && root.right == null)) {
-            return 0;
-        }
-        if (diameter.containsKey(root)) {
-            return diameter.get(root);
-        }
-        int diameterLeft = diameterOfBinaryTree(root.left);
-        int diameterRight = diameterOfBinaryTree(root.right);
+//         if(root == null || (root.left == null && root.right == null)) {
+//             return 0;
+//         }
+//         if (diameter.containsKey(root)) {
+//             return diameter.get(root);
+//         }
+//         int diameterLeft = diameterOfBinaryTree(root.left);
+//         int diameterRight = diameterOfBinaryTree(root.right);
         
-        int leftHeight = getHeight(root.left);
-        int rightHeight = getHeight(root.right);
-        int diameterCurrent = (leftHeight > -1 ? leftHeight + 1 : 0) + (rightHeight > -1 ? rightHeight + 1 : 0);
-        // System.out.println("root -> " + root.val + " nodes -> " + getNodes(root));
-        int ans = Math.max(diameterCurrent, Math.max(diameterLeft, diameterRight));
-        diameter.put(root, ans);
-        return ans;
+//         int leftHeight = getHeight(root.left);
+//         int rightHeight = getHeight(root.right);
+//         int diameterCurrent = (leftHeight > -1 ? leftHeight + 1 : 0) + (rightHeight > -1 ? rightHeight + 1 : 0);
+//         // System.out.println("root -> " + root.val + " nodes -> " + getNodes(root));
+//         int ans = Math.max(diameterCurrent, Math.max(diameterLeft, diameterRight));
+//         diameter.put(root, ans);
+//         return ans;
+        getHeight(root);
+        return maxDiameter;
     }
 
     int getHeight(TreeNode root) {
@@ -43,6 +46,8 @@ class Solution {
         }
         int leftHeight = getHeight(root.left);
         int rightHeight = getHeight(root.right);
+        int diameter = (leftHeight > -1 ? leftHeight + 1 : 0) + (rightHeight > -1 ? rightHeight + 1 : 0);
+        maxDiameter = Math.max(maxDiameter, diameter);
         return 1 + Math.max(leftHeight, rightHeight);
     }
 }
