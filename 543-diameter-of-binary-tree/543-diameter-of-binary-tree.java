@@ -34,15 +34,6 @@ class Solution {
         return ans;
     }
 
-    public int getNodes(TreeNode root) {
-        if(root == null) {
-            return 0;
-        }
-        int nodesLeft = getNodes(root.left);
-        int nodesRight = getNodes(root.right);
-        return 1 + Math.max(nodesLeft, nodesRight);
-    }
-
     int getHeight(TreeNode root) {
         if(root == null) {
             return -1;
