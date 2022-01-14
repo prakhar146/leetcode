@@ -16,7 +16,10 @@ class Solution {
         op1 = op2 = op3 = op4 =  costs[2] * days.length;
 
         if (passValidity >= days[currentPosition]) {
-            op4 = getMinCostHelper(days, costs, passValidity, currentPosition + 1);
+            int minCost = 0;
+            minCost = minCostByDay[days[currentPosition-1]] != null && minCostByDay[days[currentPosition-1]][passValidity] != null ? minCostByDay[days[currentPosition-1]][passValidity] : getMinCostHelper(days, costs, passValidity, currentPosition + 1);
+            minCostByDay[days[currentPosition]][passValidity] = minCost;
+            return minCost;
         } else {
             op1 = costs[0] + getMinCostHelper(days, costs, days[currentPosition], currentPosition + 1);
             op2 = costs[1] + getMinCostHelper(days, costs, days[currentPosition] + 6, currentPosition + 1);
