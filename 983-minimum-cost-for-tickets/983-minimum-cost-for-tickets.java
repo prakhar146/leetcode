@@ -8,8 +8,8 @@ class Solution {
         if(currentPosition >= days.length) {
             return 0;
         }
-        if(minCostByDay[days[currentPosition]][passValidity] != null) {
-            return minCostByDay[days[currentPosition]][passValidity];
+        if(minCostByDay[currentPosition][passValidity] != null) {
+            return minCostByDay[currentPosition][passValidity];
         }
 
         int op1, op2, op3, op4;
@@ -17,8 +17,8 @@ class Solution {
 
         if (passValidity >= days[currentPosition]) {
             int minCost = 0;
-            minCost = minCostByDay[days[currentPosition-1]] != null && minCostByDay[days[currentPosition-1]][passValidity] != null ? minCostByDay[days[currentPosition-1]][passValidity] : getMinCostHelper(days, costs, passValidity, currentPosition + 1);
-            minCostByDay[days[currentPosition]][passValidity] = minCost;
+            minCost = minCostByDay[currentPosition] != null && minCostByDay[currentPosition][passValidity] != null ? minCostByDay[currentPosition][passValidity] : getMinCostHelper(days, costs, passValidity, currentPosition + 1);
+            minCostByDay[currentPosition][passValidity] = minCost;
             return minCost;
         } else {
             op1 = costs[0] + getMinCostHelper(days, costs, days[currentPosition], currentPosition + 1);
@@ -27,7 +27,7 @@ class Solution {
         }
 
         int minCost = Math.min(op1, Math.min(op2, Math.min(op3, op4)));
-        minCostByDay[days[currentPosition]][passValidity] = minCost;
+        minCostByDay[currentPosition][passValidity] = minCost;
 
         return minCost;
     }
