@@ -1,77 +1,40 @@
 class Solution {
-    Integer[][] minCostByDay = new Integer[366][396];
+    Integer[] minArray = new Integer[366];
     public int mincostTickets(int[] days, int[] costs) {
-       return getMinCostHelper(days, costs, 0, 0);
+        return minConstDFS(days, costs, 0, 0);
     }
     
-    int getMinCostHelper(int[] days, int[] costs, int passValidity, int currentPosition) {
-        if(currentPosition >= days.length) {
+    int minConstDFS(int[] days, int[] costs, int passValidity, int currentPosition) {
+                if(currentPosition >= days.length) {
             return 0;
         }
-        if(minCostByDay[currentPosition][passValidity] != null) {
-            return minCostByDay[currentPosition][passValidity];
+        if(minArray[days[currentPosition]] != null) {
+            return minArray[days[currentPosition]];
         }
 
         int op1, op2, op3, op4;
         op1 = op2 = op3 = op4 =  costs[2] * days.length;
 
         if (passValidity >= days[currentPosition]) {
-            int minCost = 0;
-            minCost = minCostByDay[currentPosition] != null && minCostByDay[currentPosition][passValidity] != null ? minCostByDay[currentPosition][passValidity] : getMinCostHelper(days, costs, passValidity, currentPosition + 1);
-            minCostByDay[currentPosition][passValidity] = minCost;
-            return minCost;
+            op4 = minConstDFS(days, costs, passValidity, currentPosition + 1);
         } else {
-            op1 = costs[0] + getMinCostHelper(days, costs, days[currentPosition], currentPosition + 1);
-            op2 = costs[1] + getMinCostHelper(days, costs, days[currentPosition] + 6, currentPosition + 1);
-            op3 = costs[2] + getMinCostHelper(days, costs, days[currentPosition] + 29, currentPosition + 1);
+            op1 = costs[0] + minConstDFS(days, costs, days[currentPosition], getNextPosition(days, days[currentPosition]));
+            op2 = costs[1] + minConstDFS(days, costs, days[currentPosition] + 6, getNextPosition(days, days[currentPosition] + 6));
+            op3 = costs[2] + minConstDFS(days, costs, days[currentPosition] + 29, getNextPosition(days, days[currentPosition] + 29));
         }
 
         int minCost = Math.min(op1, Math.min(op2, Math.min(op3, op4)));
-        minCostByDay[currentPosition][passValidity] = minCost;
+        minArray[days[currentPosition]] = minCost;
 
         return minCost;
     }
-}
-
-/*
-[2, 7, 15]
-
-
-[1, 4, 6, 7, 8, 20]
-
-
-cost = 2
-passValidity = x + 1
-lastDay = days[days.length()]
-
-Integer[] minCostByDay = new Integer[366];
-getMinCost(days, costs, passValidity, currentPosition) {
-    if(passValidity > days[days.length()]) {
-        return 0;
-    }
-    if(minCostByDay[days[currentPosition]] != null) {
-        return minCostByDay[days[currentPosition]];
-    }
     
-    int op1, op2, op3, op4;
-    op1 = op2 = op3 = op4 =  costs[2] * days.length();
-
-    if (passValidity > days[currentPosition]) {
-        op4 = getMinCost(days, costs, passValidity);
-    } else {
-        op1 = costs[0] + getMinCost(days, costs, days[currentPosition], currentPosition + 1);
-        op2 = costs[1] + getMinCost(days, costs, days[currentPosition] + 6, currentPosition + 1);
-        op3 = costs[2] + getMinCost(days, costs, days[currentPosition] + 29, currentPosition + 1);
+    int getNextPosition(int[] days, int passValidity) {
+        for(int i = 0 ; i < days.length; i++) {
+            if (days[i] > passValidity) {
+                return i;
+            }
+        }
+        return days.length;
     }
-    
-    minCostByDay[days[currentPosition]] = Math.min(op1, Math.min(op2, Math.min(op3, op4)));
-    return minCostByDay[days[currentPosition]];
 }
-
-
-
-ptA ptB ptC ptD
-
-pass 1: ptA ptB
-
-*/
