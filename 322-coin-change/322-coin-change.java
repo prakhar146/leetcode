@@ -1,26 +1,29 @@
 class Solution {
-    Map<Integer, Integer> minCoinsReqd = new HashMap<>();
     public int coinChange(int[] coins, int amount) {
-        if(minCoinsReqd.containsKey(amount)) {
-            return minCoinsReqd.get(amount);
+        int[] amounts = new int[amount + 1];
+        for(int i = 0 ; i < amounts.length; i++) {
+            amounts[i] = amount + 1;
         }
-        if(amount == 0) {
-            return 0;
-        }
-        if(amount < 0) {
-            return -1;
-        }
+        amounts[0] = 0;
         
-        int minCoins = Integer.MAX_VALUE;
-        for(int i = 0 ; i < coins.length ; i++) {
-            int coinsUsed = coinChange(coins, amount - coins[i]);
-            if(coinsUsed >= 0) {
-                minCoins = Math.min(minCoins, 1 + coinsUsed);
-            }
-        }
-        minCoins = (minCoins == Integer.MAX_VALUE) ? -1 : minCoins;
-        minCoinsReqd.put(amount, minCoins);
+//         int minCoin = Integer.MAX_VALUE;
+//         for(int coin: coins) {
+//             if(coin < minCoin) {
+//                 minCoin = coin;
+//             }
+//         }
         
-        return minCoins;
+//         amounts[minCoin] = 1;
+        
+        for(int i = 1; i < amounts.length; i++) {
+            for(int coin: coins) {
+                    if(i - coin >= 0 && amounts[i - coin] < amount) {
+                        amounts[i] = Math.min(amounts[i], amounts[i - coin] + 1);
+                    }
+                }
+        }
+        // System.out.println("Array -> " + Arrays.toString(amounts));
+        
+       return amounts[amount] > amount ? -1 : amounts[amount];
     }
 }
