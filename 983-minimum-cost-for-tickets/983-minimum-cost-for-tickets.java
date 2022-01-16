@@ -1,40 +1,32 @@
 class Solution {
-    Integer[] minArray = new Integer[366];
     public int mincostTickets(int[] days, int[] costs) {
-        return minConstDFS(days, costs, 0, 0);
-    }
-    
-    int minConstDFS(int[] days, int[] costs, int passValidity, int currentPosition) {
-                if(currentPosition >= days.length) {
-            return 0;
+                int[] dp = new int[days.length];
+        for (int i = 0; i < days.length; i++) {
+            dp[i] = costs[2] * days.length;
         }
-        if(minArray[days[currentPosition]] != null) {
-            return minArray[days[currentPosition]];
+        int min = costs[0];
+        for (int i: costs) {
+            min = Math.min(min, i);
         }
-
-        int op1, op2, op3, op4;
-        op1 = op2 = op3 = op4 =  costs[2] * days.length;
-
-        if (passValidity >= days[currentPosition]) {
-            op4 = minConstDFS(days, costs, passValidity, currentPosition + 1);
-        } else {
-            op1 = costs[0] + minConstDFS(days, costs, days[currentPosition], getNextPosition(days, days[currentPosition]));
-            op2 = costs[1] + minConstDFS(days, costs, days[currentPosition] + 6, getNextPosition(days, days[currentPosition] + 6));
-            op3 = costs[2] + minConstDFS(days, costs, days[currentPosition] + 29, getNextPosition(days, days[currentPosition] + 29));
-        }
-
-        int minCost = Math.min(op1, Math.min(op2, Math.min(op3, op4)));
-        minArray[days[currentPosition]] = minCost;
-
-        return minCost;
-    }
-    
-    int getNextPosition(int[] days, int passValidity) {
-        for(int i = 0 ; i < days.length; i++) {
-            if (days[i] > passValidity) {
-                return i;
+        dp[0] = min;
+        for (int i = 1 ; i < days.length ; i++) {
+            int c1 = costs[0] + dp[i - 1];
+            int d7 = 0;
+            int c2 = costs[1];
+            while (d7 < i && ((days[i] - days[d7]) >= 7)) {
+                c2 = costs[1] + dp[d7];
+                d7++;
             }
+            int d30 = 0;
+            int c3 = costs[2];
+            while (d30 < i && ((days[i] - days[d30]) >= 30)) {
+                c3 = costs[2] + dp[d30];
+                d30++;
+                
+            }
+            dp[i] = Math.min(c1, Math.min(c2, c3));
         }
-        return days.length;
+
+        return dp[days.length - 1];
     }
 }
