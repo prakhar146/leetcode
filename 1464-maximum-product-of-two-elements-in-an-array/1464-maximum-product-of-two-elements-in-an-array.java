@@ -1,17 +1,15 @@
 class Solution {
     public int maxProduct(int[] nums) {
-        int maxIdx = 0;
-        for(int i = 0; i < nums.length; i++) {
-            if(nums[i] > nums[maxIdx]) {
-                maxIdx = i;
+        int m1 = 0; int m2 = 0;
+        for(int i: nums) {
+            if(i > m1) {
+                m2 = m1;
+                m1 = i;
+            } else {
+                m2 = Math.max(m2, i);
             }
         }
-        int maxProduct = nums[maxIdx] - 1;
-        for(int i = 0; i < nums.length; i++) {
-            if(i != maxIdx) {
-                maxProduct = Math.max(maxProduct,((nums[maxIdx] - 1) * (nums[i] - 1)));
-            }
-        }
-        return maxProduct;
+        
+        return ((m1 - 1) * (m2 - 1));
     }
 }
