@@ -1,41 +1,53 @@
 class Solution {
     public List<Integer> findAnagrams(String s, String p) {
-        char[] sArray = s.toCharArray();
-        char[] pArray = p.toCharArray();
-
         List<Integer> anagramIdx = new ArrayList<>();
-
-        int[] cntArray = getCntArray(pArray);
-        int[] tmpCntArray = new int[26];
-        System.arraycopy(cntArray, 0, tmpCntArray, 0, cntArray.length);
-        int wrdCnt = 0;
-
-        // System.out.println(Arrays.toString(tmpCntArray));
-        for(int i = 0; i < sArray.length; i++) {
-            if(tmpCntArray[(int)sArray[i] - 97] > 0) {
-                tmpCntArray[(int)sArray[i] - 97]--;
-                wrdCnt++;
+        if(s.length() < p.length()) {
+            return anagramIdx;
+        }
+        Map<Character, Integer> pMap = new HashMap<>();
+        for(int i = 0; i < p.length(); i++) {
+            if(pMap.containsKey(p.charAt(i))) {
+                pMap.put(p.charAt(i), pMap.get(p.charAt(i)) + 1);
             } else {
-                i = i - wrdCnt;
-                wrdCnt = 0;
-                System.arraycopy(cntArray, 0, tmpCntArray, 0, cntArray.length);
-            }
-            if(wrdCnt == pArray.length) {
-                anagramIdx.add(i - (wrdCnt - 1));
-                i = i - (wrdCnt - 1);
-                wrdCnt = 0;
-                System.arraycopy(cntArray, 0, tmpCntArray, 0, cntArray.length);
+                pMap.put(p.charAt(i), 1);
             }
         }
-
+        
+        int left = 0;
+        int right = p.length() - 1;
+        
+        Map<Character, Integer> sMap = new HashMap<>();
+        for(int i = left; i < right; i++) {
+            if(sMap.containsKey(s.charAt(i))) {
+                sMap.put(s.charAt(i), sMap.get(s.charAt(i)) + 1);
+            } else {
+                sMap.put(s.charAt(i), 1);
+            }
+        }
+        
+        while(right < s.length()) {
+            sMap.put(s.charAt(right), sMap.getOrDefault(s.charAt(right), 0) + 1);
+            // System.out.println("WINDOW: LEFT -> " + left + "; RIGHT -> " + right);
+            // printMap(sMap, "sMap");
+            // printMap(pMap, "pMap");
+            if(pMap.equals(sMap)) {
+                anagramIdx.add(left);
+            }
+            sMap.put(s.charAt(left), sMap.get(s.charAt(left)) - 1);
+            if(sMap.get(s.charAt(left)) < 1) {
+                sMap.remove(s.charAt(left));
+            }
+            left++;
+            right++;
+        }
+        
         return anagramIdx;
     }
     
-    int[] getCntArray(char[] pArray) {
-        int[] cntArray = new int[26];
-        for(char c: pArray) {
-            cntArray[((int) c - 97)]++;
+    void printMap(Map<Character, Integer> m, String name) {
+        System.out.println("--------" + name + "----------");
+        for(Character c: m.keySet()) {
+            System.out.println(c + " -> " + m.get(c));
         }
-        return cntArray;
     }
 }
