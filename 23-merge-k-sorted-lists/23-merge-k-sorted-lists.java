@@ -36,10 +36,10 @@ class Solution {
         while(!pq.isEmpty()) {
             ListNode top = pq.poll();
             if(sortedListHead == null) {
-                sortedListHead = new ListNode(top.val);
+                sortedListHead = top;
                 currentNode = sortedListHead;
             } else {
-                currentNode.next = new ListNode(top.val);
+                currentNode.next = top;
                 currentNode = currentNode.next;
             }
             if(top.next != null) {
