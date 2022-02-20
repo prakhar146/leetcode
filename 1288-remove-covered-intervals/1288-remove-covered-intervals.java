@@ -12,12 +12,7 @@ class Solution {
             }
         });
         
-        // for(int[] i: intervals) {
-        //      System.out.println(Arrays.toString(i));
-        // }
-        
         int cnt = 1;
-        int intervalSkipped = 0;
         int left = 0, right = 0;
         int numLeft, numRight;
         
@@ -25,23 +20,12 @@ class Solution {
             numLeft = intervals[left][1];
             numRight = intervals[right][1];
             if(numLeft < numRight) {
-                // change left and modify cnt
-                intervalSkipped += right - left - 1;
                 left = right;
                 cnt++;
             }
             right++;
-        }   
-         // System.out.println("left here -> " + left);
-        intervalSkipped += (right - left) - 1;
+        }
             
         return cnt;
     }
 }
-/*
-
-[1,4] [2,8] [3,6]
-
-
-
-*/
