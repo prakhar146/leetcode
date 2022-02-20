@@ -8,60 +8,28 @@
  * }
  */
 class Solution {
-    private TreeNode lca = null;
+    TreeNode lca = null;
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        Map<TreeNode, Boolean> visitedNodes = new HashMap<>();
-        lca = null;
-        visitNode(root, p, visitedNodes);
-        // printMap(visitedNodes);
-        // System.out.println("-----------------------");
-        visitNode(root, q, visitedNodes);
-        // printMap(visitedNodes);
-        
+        visitNode(root, p, q);
         return lca;
     }
     
-    boolean visitNode(TreeNode root, TreeNode targetNode, Map<TreeNode, Boolean> visitedNode) {
-        if(root == targetNode) {
-            if(visitedNode.containsKey(root) && lca == null) {
-                lca = root;
-                // System.out.println("lca -> " + lca.val);
-            }
-            visitedNode.put(root, true);
-            // if(visitedNode.containsKey(root)) {
-            // lca = root;
-            // // System.out.println("lca -> " + lca.val);
-            // }
-           return true; 
-        }
+    boolean visitNode(TreeNode root, TreeNode p, TreeNode q) {
         if(root == null) {
             return false;
         }
         
-        // visitedNode.put(root, true);
-        boolean isCorrect = visitNode(root.left, targetNode, visitedNode);
-        if(!isCorrect) {
-            isCorrect = visitNode(root.right, targetNode, visitedNode);
+        int visitLeft = visitNode(root.left, p, q) ? 1 : 0;
+        int visitRight = visitNode(root.right, p, q) ? 1 : 0;
+        
+        int currentIsRight = (root == p || root == q) ? 1 : 0;
+        
+        
+        if(visitLeft + visitRight + currentIsRight > 1) {
+            this.lca = root;
         }
-        if(isCorrect) {
-            if(visitedNode.containsKey(root) && lca == null) {
-                lca = root;
-                // System.out.println("lca -> " + lca.val);
-            }
-            visitedNode.put(root, true);
-        }
-//         if(!isCorrect) {
-//             visitedNode.remove(root);
-//         } else {
-            
-//         }
-        return isCorrect;
-    }
-    
-    void printMap(Map<TreeNode, Boolean> visitedNodes) {
-        System.out.println("-----------------------");
-        for(TreeNode tn: visitedNodes.keySet()) {
-            System.out.println("node -> " + tn.val);
-        }
+        
+        return ((visitLeft + visitRight + currentIsRight) > 0);
+        
     }
 }
