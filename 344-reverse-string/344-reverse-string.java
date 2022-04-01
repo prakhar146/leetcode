@@ -1,11 +1,11 @@
 class Solution {
     public void reverseString(char[] s) {
         int mid = (int) Math.ceil(s.length / 2);
+        char temp = 'p';
         for(int i = 0; i < mid; i++) {
-            char c1 = s[i];
-            char c2 = s[s.length - i - 1];
-            s[i] = c2;
-            s[s.length - i - 1] = c1;
+            temp = s[i];
+            s[i] = s[s.length - i - 1];
+            s[s.length - i - 1] = temp;
         }
         return;
     }
