@@ -1,116 +1,128 @@
 class LRUCache {
-
+    class Node {
+        int key;
+        int val;
+        Node next;
+        Node prev;
+        
+        Node(int k, int v) {
+            this.key = k;
+            this.val = v;
+            this.next = null;
+            this.prev = null;
+        }
+    }
+    
+    class DoublyList {
+        Node head;
+        Node tail;
+        
+        DoublyList() {
+            this.head = null;
+            this.tail = null;
+        }
+        
+        public Node delete(Node n) {
+            Node prev = n.prev;
+            Node next = n.next;
+            
+            if(prev != null) {
+                prev.next = next;
+            }
+            if(next != null) {
+                next.prev = prev;
+            }
+            if(head == n) {
+                head = next;
+            }
+            if(tail == n) {
+                tail = prev;
+            }
+            return n;
+        }
+        
+        public Node delete() {
+            Node tmp = this.head;
+            this.head = this.head.next;
+            if(this.head != null) {
+                this.head.prev = null;   
+            }
+            if(this.tail == tmp) {
+                this.tail = null;
+            }
+            tmp.next = null;
+            return tmp;
+        }
+        
+        public void add(Node n) {
+            if(tail == null || head == null) {
+                this.head = n;
+                this.tail = n;
+                return;
+            }
+            this.tail.next = n;
+            n.prev = this.tail;
+            this.tail = n;
+        }
+    }
+    
     class Pair {
         int key;
-        int value;
-
-        Pair(int key, int value) {
-            this.key = key;
-            this.value = value;
+        Node n;
+        
+        Pair(int k, Node n) {
+            this.key = k;
+            this.n = n;
         }
     }
-
-    class ListNode {
-        Pair p;
-        ListNode next;
-        ListNode prev;
-
-        ListNode(int key, int value) {
-            this.p = new Pair(key, value);
-            next = null;
-            prev = null;
-        }
-    }
-
-
-    int capacity;
-    ListNode head;
-    ListNode tail;
-    Map<Integer,ListNode> keySet;
-
+    
+    private Map<Integer, Node> hm;
+    private DoublyList dl;
+    private int capacity;
 
     public LRUCache(int capacity) {
+        hm = new HashMap<>();
+        dl = new DoublyList();
         this.capacity = capacity;
-        this.keySet = new HashMap<>();
-        this.head = null;
-        this.tail = null;
+        // cache = new LinkedList<>();
     }
-
+    
     public int get(int key) {
-        // this.printMap();
-        if(!keySet.containsKey(key)) {
+        // System.out.println("Getting " + key);
+        if(hm.containsKey(key)) {
+            refreshNode(key, hm.get(key).val, hm.get(key));
+            return hm.get(key).val;
+        } else {
             return -1;
         }
-        int value = keySet.get(key).p.value;
-        this.put(key, value);
-        return value;
     }
-
+    
     public void put(int key, int value) {
-        ListNode kv = null;
-        if(this.keySet.containsKey(key)) {
-            kv = this.keySet.get(key);
-            removeNode(kv);
+        // System.out.println("Putting " + key);
+        if(hm.containsKey(key)) {
+            refreshNode(key, value, hm.get(key));
+        } else {
+            if(hm.size() == capacity) {
+                pop();   
+            }
+            Node toPut = new Node(key, value);
+            dl.add(toPut);
+            this.hm.put(key, toPut);
         }
-        kv = new ListNode(key, value);
-        if (head != null) {
-            kv.next = this.head;
-            this.head.prev = kv;
-        }
-        this.head = kv;
-        if(tail == null) {
-            this.tail = kv;
-        }
-
-        this.updateKeyset(key, kv);
-
     }
-
-    private void removeNode(ListNode ln) {
-        ListNode prev = ln.prev;
-        ListNode next = ln.next;
-        if(this.head == ln) {
-            this.head = next;
-        }
-        if (this.tail == ln) {
-            this.tail = prev;
-        }
-        if (prev != null) {
-            prev.next = next;
-        }
-        if (next != null) {
-            next.prev = prev;
-        }
-        ln.next = null;
-        ln.prev = null;
+    
+    
+    private void refreshNode(int key, int value, Node n) {
+        Node toPop = dl.delete(n);
+        Node toUpdate = new Node(key, value);
+        this.hm.put(key, toUpdate);
+        dl.add(toUpdate);
     }
-
-    private void updateKeyset(int key, ListNode ln) {
-        this.keySet.put(key, ln);
-        if(keySet.size() > this.capacity) {
-            ListNode nodeToRemove = removeFromTail();
-            this.keySet.remove(nodeToRemove.p.key);
-        }
-        return;
-    }
-
-    private ListNode removeFromTail() {
-        ListNode nodeToRemove = this.tail;
-        ListNode newTail = this.tail.prev;
-        this.tail.prev = null;
-        if(newTail != null) {
-            newTail.next = null;
-        }
-        this.tail = newTail;
-        return nodeToRemove;
-    }
-
-    public void printMap() {
-        System.out.println("----------------");
-        for(Integer key: this.keySet.keySet()) {
-            System.out.println("key -> " + key + " value -> " + this.keySet.get(key).p.value);
-        }
-        System.out.println("----------------");
+    
+    private void pop() {
+        Node toPop = dl.delete();
+        int keyToPop = toPop.key;
+        this.hm.remove(keyToPop);
     }
 }
 
