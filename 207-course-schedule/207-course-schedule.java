@@ -1,124 +1,57 @@
 class Solution {
     public boolean canFinish(int numCourses, int[][] prerequisites) {
+        // 9\n[[0,7],[2,0],[0,4],[0,8],[6,1],[1,3],[3,5],[5,8],[6,5]]
+        // 
         Map<Integer, List<Integer>> graph = new HashMap<>();
-        loadGraph(graph, prerequisites, prerequisites.length);
+        loadGraph(graph, prerequisites);
         return !hasCycle(graph);
     }
-    
-//     private boolean hasCycle(Map<Integer, List<Integer>> graph) {
-//         if(graph.size() < 1) {
-//             return false;
-//         }
-        
-//         StringBuilder cyc = new StringBuilder();
-        
-//         Queue<Integer> dq = new ArrayDeque<>();
-//         Map<Integer, Boolean> finished = new HashMap<>();
-//         for(int course: graph.keySet()) {
-//             System.out.println("--------------");
-//             Map<Integer, Boolean> pathStack = new HashMap<>();
-//             if(!finished.containsKey(course)) {
-//                 dq.offer(course);
-//                 pathStack.put(course, true);
-//                 cyc.append(course);
-//                 while(!dq.isEmpty()) {
-//                     int courseToStudy = dq.poll();
-//                     System.out.print("Study " + courseToStudy);
-//                     pathStack.remove(courseToStudy);
-//                     if(finished.containsKey(courseToStudy)) {
-//                         return true;
-//                     }
-//                     if(graph.containsKey(courseToStudy)) {
-//                         List<Integer> preReqs = graph.get(courseToStudy);
-//                         System.out.println(" Preq + " + Arrays.toString(preReqs.toArray()));
-//                         for(int preReq: preReqs) {
-//                             cyc.append(" -> " + preReq);
-//                             if(!finished.containsKey(preReq)) {
-//                                 pathStack.put(preReq, true);
-//                                 dq.offer(preReq);
-//                             }
-//                         }
-//                     } else System.out.println();
-//                     finished.put(courseToStudy, true);
-//                 }   
-//             } else System.out.println("Study " + course + " -> Already studied!");
-//         }
-        
-//         return false;
-//     }
-    
-    private boolean hasCycle(Map<Integer, List<Integer>> graph) {
-        if(graph.size() < 1) {
-            return false;
+
+    boolean hasCycle(Map<Integer, List<Integer>> graph) {
+        Map<Integer, Boolean> visited = new HashMap<>();
+        for(int course: graph.keySet()) {
+            if(!visited.containsKey(course)) {
+                Map<Integer, Boolean> currentStack = new HashMap<>();
+                boolean hasCycle = hasCycleFromCourse(graph, course, visited, currentStack);
+                if(hasCycle) {
+                    return true;
+                }
+            }
         }
-        Map<Integer, String> status = new HashMap<>();
-        Queue<Integer> q = new ArrayDeque<>();
-        Stack<Integer> s = new Stack<>();
-        boolean ans = false;
-        for(int vertex: graph.keySet()) {
-            q.add(vertex);
-            s.add(vertex);
-            ans = ans || hasCycleDFS(graph, vertex, status, q, s);
-        }
-        
-        return ans;
+        return false;
     }
-    
-    private boolean hasCycleDFS(Map<Integer, List<Integer>> graph, int vertex, Map<Integer, String> status, Queue<Integer> q, Stack<Integer> s) { 
-        if(!graph.containsKey(vertex)) {
+
+    boolean hasCycleFromCourse(Map<Integer, List<Integer>> graph, int vertex, Map<Integer, Boolean> visited, Map<Integer, Boolean> currentStack) {
+        List<Integer> adjVertex = graph.get(vertex);
+        visited.put(vertex, true);
+        if(adjVertex == null) {
             return false;
         }
-        boolean ans = false;
-        for(int v: graph.get(vertex)) {
-            if(status.containsKey(v) && status.get(v) == "IN_STACK") {
+        currentStack.put(vertex, true);
+        boolean hasCycle = false;
+        for(int v: adjVertex) {
+            if(currentStack.containsKey(v)) {
                 return true;
             }
-            if(!status.containsKey(v) || status.get(v) != "VISITED") {
-                status.put(v, "IN_STACK");
-                q.offer(v);
-                s.push(v);
-                ans = ans || hasCycleDFS(graph, v, status, q, s);   
+            if(!visited.containsKey(v)) {
+                hasCycle = hasCycle || hasCycleFromCourse(graph, v, visited, currentStack);
             }
-            status.put(v, "VISITED");
         }
-        q.poll();
-        if(s.size() > 0) {
-            s.pop();   
-        }
-        return ans;
+        currentStack.remove(vertex);
+        return hasCycle;
     }
-    
-    private void printStack(Queue<Integer> q) {
-        System.out.println("--Path--");
-        while(!q.isEmpty()) {
-            System.out.print(q.poll() + " ->");
-        }
-        System.out.println();
-    }
-    
-        private void printStack(Stack<Integer> s) {
-        System.out.println("--Path--");
-        while(!s.isEmpty()) {
-            System.out.print(s.pop() + " ->");
-        }
-        System.out.println();
-    }
-    
-    private void loadGraph(Map<Integer, List<Integer>> graph, int[][] prerequisites, int n) {
-        for(int i = 0; i < n; i++) {
-            int course = prerequisites[i][0];
-            int preReq = prerequisites[i][1];
+
+    void loadGraph(Map<Integer, List<Integer>> graph, int[][] prerequisites) {
+        for(int[] prerequisite: prerequisites) {
+            int course = prerequisite[0];
+            int coursePrerequisite = prerequisite[1];
+
             if(!graph.containsKey(course)) {
                 graph.put(course, new ArrayList<>());
             }
-            List<Integer> currentPreReq = graph.get(course);
-            currentPreReq.add(preReq);
-            graph.put(course, currentPreReq);
+            List<Integer> currentPrerequisites = graph.get(course);
+            currentPrerequisites.add(coursePrerequisite);
+            graph.put(course, currentPrerequisites);
         }
     }
 }
-
-/*
-1 -> 0
-
-*/
