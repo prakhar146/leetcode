@@ -2,38 +2,54 @@ class Solution {
     public String longestPalindrome(String s) {
         int n = s.length();
         int[][] isPalindrome = new int[n][n];
-        String maxString =  "";
-        for(int g = 0; g < n; g++) {
-            for(int i = 0, j = g; (i < n && j < n); i++, j++) {
-                if(g == 0) {
+        int ptr1 = 0;
+        int ptr2 = 0;
+        int maxGap = -1;
+        for(int gap = 0; gap < n; gap++) {
+            int i = 0;
+            for(int j = (i + gap); j < n; j++, i++) {
+                if(gap == 0) {
+                    if(gap > maxGap) {
+                       ptr1 = i;
+                       ptr2 = j + 1;
+                       maxGap = gap;
+                    }
                     isPalindrome[i][j] = 1;
-                } else if(g == 1) {
-                    isPalindrome[i][j] = (s.charAt(i) == s.charAt(j) ? 1 : 0);
                 } else {
-                    isPalindrome[i][j] = ((s.charAt(i) == s.charAt(j) && isPalindrome[i + 1][j - 1] == 1)) ? 1 : 0;
-                }
-                if((isPalindrome[i][j] == 1) && ((j - i) + 1) > maxString.length()) {
-                    maxString = s.substring(i, j + 1); 
+                    char left = s.charAt(i);
+                    char right = s.charAt(j);
+                    if(gap == 1) {
+                            if(left == right) {
+                                isPalindrome[i][j] = 1;
+                                if(gap > maxGap) {
+                                    ptr1 = i;
+                                    ptr2 = j + 1;
+                                    // System.out.println("ptr1 " + ptr1 + " ptr2 " + ptr2 +" gap " + gap);
+                                    maxGap = gap;
+                                }
+                            }
+                    } else {
+                        if(left == right) {
+                            isPalindrome[i][j] = isPalindrome[i + 1][j - 1];
+                            // System.out.println("ptr1 " + ptr1 + " ptr2 " + ptr2 +" gap " + gap);
+                            if((isPalindrome[i][j] == 1) && (gap > maxGap)) {
+                                ptr1 = i;
+                                ptr2 = j + 1;
+                                // System.out.println("ptr1 " + ptr1 + " ptr2 " + ptr2 +" gap " + gap);
+                                maxGap = gap;
+                            }
+                        }
+                    }
+                    
                 }
             }
         }
         
-        // System.out.println(maxString);
-//         for(int g = (n - 1); g > -1; g--) {
-//             for(int i 0, j = g; (i < n && j < n); i++, j++) {
-                
-//             }
-//         }
         
-        // printMatrix(isPalindrome);
-        return maxString;
+        // for(int i = 0; i < n; i++) {
+        //     System.out.println(Arrays.toString(isPalindrome[i]));
+        // }
+        
+        return s.substring(ptr1, ptr2);
     }
-    
-    private void printMatrix(int[][] matrix) {
-        for(int[] nums: matrix) {
-            System.out.println(Arrays.toString(nums));
-        }
-    }
-                                          
-                                          
 }
