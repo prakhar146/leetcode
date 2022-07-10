@@ -1,64 +1,57 @@
 class Solution {
     public boolean exist(char[][] board, String word) {
-        int[][] exists = new int[board.length][board[0].length];
-        int m = board.length, n = board[0].length;
-        boolean ans = false;
-        for(int i = 0; i < m; i++) {
-            for(int j = 0; j < n; j++) {
-                ans = ans || doesExists(board, word, 0, i, j, exists);
-                if(ans) {
-                    return true;
+        List<int[]> possibleStartingPoints = new ArrayList<>();
+        char c = word.charAt(0);
+        
+        int M = board.length;
+        int N = board[0].length;
+        
+        for(int i = 0; i < M; i++) {
+            for(int j = 0; j < N; j++) {
+                if(board[i][j] == c) {
+                    possibleStartingPoints.add(new int[] {i, j});
                 }
             }
         }
-        return false;
-        // return doesExists(board, word, 0, 0, 0, exists);
         
-        // return doesExistStack(board, word, exists);
+        boolean wordFound = false;
+        for(int i = 0; i < possibleStartingPoints.size(); i++) {
+            boolean[][] visited = new boolean[M][N];
+            int[] startPt = possibleStartingPoints.get(i);
+            wordFound = wordFound || doDFS(board, startPt[0], startPt[1], word, 0, visited);
+            if(wordFound) {
+                return wordFound;
+            }
+        }
+        
+        return wordFound;
     }
     
-    boolean doesExists(char[][] board, String word, int wordPtr, int rowPtr, int colPtr, int[][] exists) {
-        if(wordPtr == word.length()) {
+    boolean doDFS(char[][] board, int x, int y, String dest, int ptr, boolean[][] visited) {
+        if(ptr == dest.length()) {
             return true;
         }
-        if((rowPtr == board.length) || (colPtr == board[0].length) || (rowPtr < 0) || (colPtr < 0)) {
+        if(x < 0 || y < 0 || x >= board.length || y >= board[0].length) {
             return false;
         }
-        if(word.charAt(wordPtr) != board[rowPtr][colPtr]) {
+        if(board[x][y] != dest.charAt(ptr)) {
             return false;
         }
-        if(exists[rowPtr][colPtr] == 1) {
-            return true;
-        }
-        if(exists[rowPtr][colPtr] == -1) {
+        if(visited[x][y]) {
             return false;
         }
-        boolean op1 = false, op2 = false, op3 = false, op4 = false, op5 = false, op6 = false, op7 = false, op8 = false;
         
-        // if(word.charAt(wordPtr) == board[rowPtr][colPtr]) {
-        //     op1 = doesExists(board, word, wordPtr + 1, rowPtr + 1, colPtr, exists);
-        //     op2 = doesExists(board, word, wordPtr + 1, rowPtr, colPtr + 1, exists);
-        //     op3 = doesExists(board, word, wordPtr + 1, rowPtr - 1, colPtr, exists);
-        //     op4 = doesExists(board, word, wordPtr + 1, rowPtr, colPtr - 1, exists);   
-        // }
-        exists[rowPtr][colPtr] = -1;
-        op1 = doesExists(board, word, wordPtr + 1, rowPtr + 1, colPtr, exists);
-        op2 = doesExists(board, word, wordPtr + 1, rowPtr, colPtr + 1, exists);
-        op3 = doesExists(board, word, wordPtr + 1, rowPtr - 1, colPtr, exists);
-        op4 = doesExists(board, word, wordPtr + 1, rowPtr, colPtr - 1, exists);   
-        // op5 = doesExists(board, word, wordPtr, rowPtr + 1, colPtr, exists);
-        // op6 = doesExists(board, word, wordPtr, rowPtr, colPtr + 1, exists);
-        // op7 = doesExists(board, word, wordPtr, rowPtr - 1, colPtr, exists);
-        // op8 = doesExists(board, word, wordPtr, rowPtr, colPtr - 1, exists);
+        visited[x][y] = true;
+        boolean op1, op2, op3, op4;
         
-        boolean ans = (op1 || op2 || op3 || op4 || op5 || op6 || op7 || op8);
-        exists[rowPtr][colPtr] = 0;
+        op1 = doDFS(board, x - 1, y, dest, ptr + 1, visited);
+        op2 = doDFS(board, x + 1, y, dest, ptr + 1, visited);
+        op3 = doDFS(board, x, y - 1, dest, ptr + 1, visited);
+        op4 = doDFS(board, x, y + 1, dest, ptr + 1, visited);
+        
+        visited[x][y] = false;
+        boolean ans = op1 || op2 || op3 || op4;
+        // System.out.println("ptr " + ptr + " ans " + ans);
         return ans;
     }
 }
-
-/*
-
-
-
-*/
