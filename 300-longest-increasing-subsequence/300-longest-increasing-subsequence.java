@@ -1,32 +1,24 @@
 class Solution {
     public int lengthOfLIS(int[] nums) {
-                int[] dp = new int[nums.length];
-        dp[0] = 1;
-
-        for (int i = 1; i < nums.length; i++) {
+        int N = nums.length;
+        int[] dp = new int[N];
+        
+        for(int i = 0; i < N; i++) {
             dp[i] = 1;
-            for (int j = 0; j < i; j++) {
-                if (nums[j] < nums[i]) {
-                    dp[i] = Math.max(dp[i], 1 + dp[j]);
+        }
+        
+        for(int i = 0; i < N; i++) {
+            for(int j = 0; j < i; j++) {
+                if(nums[i] > nums[j]) {
+                    dp[i] = Math.max(1 + dp[j], dp[i]);   
                 }
             }
         }
-
-        int maxNumber = -1;
-        for (int i: dp) {
-            maxNumber = Math.max(maxNumber, i);
+        // System.out.println("dp -> " + Arrays.toString(dp));
+        int ans = 1;
+        for(int i: dp) {
+            ans = Math.max(ans, i);
         }
-        return maxNumber;
+        return ans;
     }
 }
-
-/*
-
-maxSubsequence(i) = 1 + max(maxSubsequence(j), maxSubsequence(j + 1)...);
-
-where j < i;
-    nums[j] < nums[i];
-
-
-
-*/
