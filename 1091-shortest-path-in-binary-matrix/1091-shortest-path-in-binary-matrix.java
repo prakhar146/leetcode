@@ -1,66 +1,77 @@
 class Solution {
     public int shortestPathBinaryMatrix(int[][] grid) {
-        Integer[] startPosition = new Integer[] {0, 0};
-
-        Queue<Integer[]> nodesToVisit = new LinkedList<>();
-        if (grid[startPosition[0]][startPosition[1]] == 1) {
+        if(grid[0][0] != 0) {
             return -1;
         }
-        nodesToVisit.offer(startPosition);
+        return doBFS(grid);
+    }
+    
+    int doBFS(int[][] matrix) {
+        int distance = 1;
 
-        int[][] possibleMoves = new int[][] {
-                {0, -1},
-                {-1, -1},
-                {-1, 0},
-                {-1, 1},
-                {0, 1},
-                {1, 1},
-                {1, 0},
-                {1, -1}
-        };
+        int M = matrix.length;
+        int N = matrix[0].length;
+        
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{0, 0});
+        matrix[0][0] = 5;
+        boolean canReach = false;
 
-        int level = 1;
-        while (!nodesToVisit.isEmpty()) {
-            int size = nodesToVisit.size();
-            while (size > 0) {
-                Integer[] currentPosition = nodesToVisit.poll();
-                Integer[] pos = new Integer[] {currentPosition[0], currentPosition[1]};
+        int[][] moves = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}, 
+                                        {-1, -1}, {1, -1}, {-1, 1}, {1, 1}};
 
-                if (currentPosition[0] == (grid.length - 1) && currentPosition[1] == (grid[0].length - 1)) {
-                    return level;
+        // int[][] moves = new int[][]{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+
+        while(!q.isEmpty()) {
+            int numOfPoints = q.size();
+
+            for(int i = 0; i < numOfPoints; i++) {
+                int[] currentLocation = q.poll();
+                int currentX = currentLocation[0];
+                int currentY = currentLocation[1];
+                if(currentX == (M - 1) && currentY == (N - 1)) {
+                        canReach = true;
+                        return distance;
                 }
+                // matrix[newX][newY] = 5;
+                // if(matrix[currentLocation[0]][currentLocation[1]] == 9) {
+                //     canReach = true;
+                //     return distance;
+                // }
+                
 
-                for (int[] moves: possibleMoves) {
-                    pos[0] = currentPosition[0] + moves[0];
-                    pos[1] = currentPosition[1] + moves[1];
-                    visitNode(grid, nodesToVisit, pos);
+                for(int[] move: moves) {
+                    int newX = currentX + move[0];
+                    int newY = currentY + move[1];
+                    int[] newPos = new int[]{newX, newY};
+                    if(isValid(matrix, newPos)) {
+                        matrix[newX][newY] = 5;
+                        q.offer(newPos);
+                    }
                 }
-                size--;
             }
-            level++;
+            distance++;
         }
 
-        return -1;
-    }
-    
-    
-    void visitNode(int[][] grid, Queue<Integer[]> q, Integer[] pos) {
-        if (isValid(grid, pos)) {
-            grid[pos[0]][pos[1]] = 1;
-            q.offer(new Integer[] {pos[0], pos[1]});
+        if(!canReach) {
+            return -1;
         }
+        return distance;
     }
-    
-    boolean isValid(int[][] grid, Integer[] pos) {
-        int x = pos[1];
-        int y = pos[0];
 
-        if (x < 0 || y < 0) {
+    boolean isValid(int[][] matrix, int[] pos) {
+        int x = pos[0];
+        int y = pos[1];
+        if(x < 0 || y < 0) {
             return false;
         }
-        if (x >= grid[0].length || y >= grid.length) {
+        if(x >= matrix.length || y >= (matrix[0].length)) {
             return false;
         }
-        return grid[y][x] != 1;
+        if(matrix[x][y] == 0 || matrix[x][y] == 9) {
+            return true;
+        }
+        return false;
     }
 }
