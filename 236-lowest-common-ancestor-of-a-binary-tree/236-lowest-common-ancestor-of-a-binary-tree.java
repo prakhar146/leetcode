@@ -8,28 +8,47 @@
  * }
  */
 class Solution {
-    TreeNode lca = null;
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
-        visitNode(root, p, q);
-        return lca;
+        ArrayDeque<TreeNode> pPath = new ArrayDeque<>();
+        ArrayDeque<TreeNode> qPath = new ArrayDeque<>();
+        loadPath(root, p, pPath);
+        loadPath(root, q, qPath);
+        // printList(pPath);
+        // printList(qPath);
+        // System.out.println("------");
+        return getLCA(pPath, qPath);
     }
     
-    boolean visitNode(TreeNode root, TreeNode p, TreeNode q) {
+    boolean loadPath(TreeNode root, TreeNode target, ArrayDeque<TreeNode> path) {
         if(root == null) {
             return false;
         }
-        
-        int visitLeft = visitNode(root.left, p, q) ? 1 : 0;
-        int visitRight = visitNode(root.right, p, q) ? 1 : 0;
-        
-        int currentIsRight = (root == p || root == q) ? 1 : 0;
-        
-        
-        if(visitLeft + visitRight + currentIsRight > 1) {
-            this.lca = root;
+        if(root == target) {
+            path.push(root);
+            return true;
         }
+        boolean atLeft = loadPath(root.left, target, path);
+        boolean atRight = loadPath(root.right, target, path);
+        if(atLeft || atRight) {
+            path.push(root);
+        }
+        return (atLeft || atRight);
+    }
+    
+    TreeNode getLCA(ArrayDeque<TreeNode> p1, ArrayDeque<TreeNode> p2) {
+        TreeNode lca = null;
+        while((!p1.isEmpty() && !p2.isEmpty()) && (p1.peek() == p2.peek())) {
+            lca = p1.poll();
+            p2.poll();
+        }
+        return lca;
         
-        return ((visitLeft + visitRight + currentIsRight) > 0);
-        
+    }
+    
+    void printList(ArrayDeque<TreeNode> q) {
+        for(TreeNode i: q) {
+            System.out.print(i.val + " -> ");
+        }
+        System.out.println();
     }
 }
