@@ -33,11 +33,6 @@ class Solution {
             ptr = ptr.right;
         }
         prevPtr.right = right;
-        // if(root.right == null) {
-        //     root.right = right;
-        // } else {
-        //     root.right.right = right;
-        // }
         return root;
     }
 }
