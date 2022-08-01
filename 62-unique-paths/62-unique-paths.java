@@ -9,20 +9,21 @@ class Solution {
         return getUniquePaths(0, 0, m, n, dp);
     }
     
-    int getUniquePaths(int p, int q, int m, int n, int[][] dp) {
-        if(p >= m || q >= n) {
-            return 0;
-        }
-        if((p == (m - 1)) && (q == (n - 1))) {
+    int getUniquePaths(int r, int c, int m, int n, int[][] dp) {
+        if(r == (m - 1) && c == (n - 1)) {
             return 1;
         }
-        if(dp[p][q] != -1) {
-            return dp[p][q];
+        if(r == m || c == n) {
+            return 0;
         }
-        int op1 = getUniquePaths(p + 1, q, m, n, dp);
-        int op2 = getUniquePaths(p, q + 1, m, n, dp);
-        int paths = op1 + op2;
-        dp[p][q] = paths;
-        return paths;
+        if(dp[r][c] != -1) {
+            return dp[r][c];
+        }
+        int path1 = getUniquePaths(r + 1, c, m, n, dp);
+        int path2 = getUniquePaths(r, c + 1, m, n, dp);
+        int total = path1 + path2;
+        // System.out.println("r " + r + " c " + c + " count -> " + total);
+        dp[r][c] = total;
+        return total;
     }
 }
