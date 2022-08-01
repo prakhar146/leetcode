@@ -1,81 +1,64 @@
 class Solution {
     public String minWindow(String s, String t) {
-        Map<Character, Integer> m = new HashMap<>();
-        for(char c: t.toCharArray()) {
-            if(!m.containsKey(c)) {
-                m.put(c, 0);
-            }
-            int currentCnt = m.get(c);
-            currentCnt--;
-            m.put(c, currentCnt);
-        }
+        Map<Character, Integer> tMap = new HashMap<>();
+        loadMap(t, tMap);
         
-        int leftPtr = 0;
-        int rightPtr = 0;
-        int minLength = Integer.MAX_VALUE;
-        String minString = "";
-        
-        int N = s.length();
-        int matchCnt = 0;
+        int S = s.length();
         int T = t.length();
-        while(rightPtr < N) {
-            char c = s.charAt(rightPtr);
-            if(m.containsKey(c)) {
-                int currentCnt = m.get(c);
+        
+        int left = 0;
+        int right = 0;
+        
+        String minString = "";
+        int minLength = Integer.MAX_VALUE;
+        
+        int matchCnt = 0;
+        
+        while(right < S) {
+            char c = s.charAt(right);
+            if(tMap.containsKey(c)) {
+                int currentCnt = tMap.get(c);
                 currentCnt++;
-                m.put(c, currentCnt);
+                tMap.put(c, currentCnt);
                 if(currentCnt < 1) {
-                    matchCnt++;   
+                    matchCnt++;
                 }
             }
             if(matchCnt == T) {
-                // System.out.println("Match " + s.substring(leftPtr, rightPtr + 1) + " right " + rightPtr);
                 while(matchCnt == T) {
-                    int currentLength = rightPtr + 1 - leftPtr;
-                    if(currentLength < minLength) {
-                        minLength = currentLength;
-                        minString = s.substring(leftPtr, rightPtr + 1);
+                    // System.out.println("match left -> " + left + " right -> " + right);
+                    int currentSize = right + 1 - left;
+                    if(currentSize < minLength) {
+                        minString = s.substring(left, right + 1);
+                        minLength = currentSize;
                     }
-                    char leftChar = s.charAt(leftPtr);
-                    if(m.containsKey(leftChar)) { 
-                        int currentCnt = m.get(leftChar);
+                    char leftChar = s.charAt(left);
+                    if(tMap.containsKey(leftChar)) {
+                        int currentCnt = tMap.get(leftChar);
                         currentCnt--;
-                        // System.out.println("leftPtr " + leftPtr + " leftChar " + leftChar + " cnt " + currentCnt);
-                        m.put(leftChar, currentCnt);
-                        if(m.get(leftChar) < 0) {
+                        tMap.put(leftChar, currentCnt);
+                        if(currentCnt < 0) {
                             matchCnt--;
                         }
                     }
-                    // printMap(m);
-                    leftPtr++;
+                    left++;
                 }
-                // System.out.println(" --> new left " +leftPtr);
             }
-            rightPtr++;
+            right++;
         }
-        
         return minString;
+        
     }
     
-    void printMap(Map<Character, Integer> m) {
-        System.out.print("[");
-        for(char c: m.keySet()) {
-            System.out.print(" " + c + " -> " + m.get(c));
+    void loadMap(String s, Map<Character, Integer> map) {
+        for(char c: s.toCharArray()) {
+            if(!map.containsKey(c)) {
+                map.put(c, 0);
+            }
+            int currentCnt = map.get(c);
+            currentCnt--;
+            map.put(c, currentCnt);
         }
-        System.out.println("]");
     }
+        
 }
-/*
-
-"ADOBECODEBANC"
-"ABC"
-"a"
-"a"
-"a"
-"aa"
-"ab"
-"b"
-"aaaaaaaaaaaabbbbbcdd"
-"abcdd"
-
-*/
