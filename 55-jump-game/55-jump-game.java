@@ -1,18 +1,16 @@
 class Solution {
     public boolean canJump(int[] nums) {
         int N = nums.length;
-        boolean[] dp = new boolean[N];
-        dp[N - 1] = true;
+        int goodIdx = N - 1;
         for(int i = (N - 2); i > -1; i--) {
-            for(int j = i; j <= Math.min(i + nums[i], N - 1); j++) {
-                dp[i] = dp[i] || dp[j];
-                if(dp[i]) {
-                    break;
-                }
+            int maxDistance = nums[i] + i;
+            // System.out.println("i -> " + i + " maxD -> " + maxDistance + " goodIdx -> " + goodIdx);
+            if(maxDistance >= goodIdx) {
+                goodIdx = i;
             }
         }
         
-        return dp[0];
+        return (goodIdx == 0);
     }
 }
 
