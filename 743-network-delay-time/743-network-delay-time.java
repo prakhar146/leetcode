@@ -1,89 +1,81 @@
 class Solution {
-    class Travel {
-        int d, t;
+    public int networkDelayTime(int[][] times, int n, int k) {
+        Map<Integer, List<Pair>> graph = new HashMap<>();
+        Map<Integer, Integer> visited = new HashMap<>();
+        loadGraph(graph, times);
+        // printGraph(graph);
         
-        Travel(int d, int t) {
-            this.d = d;
-            this.t = t;
+        doDijkstra(graph, visited, k);
+        if(visited.size() < n) {
+            return -1;
+        }
+        int max = 0;
+        for(int node: visited.keySet()) {
+            // System.out.println(node + " -> " + visited.get(node));
+            max = Math.max(max, visited.get(node));
+        }
+        return max;
+    }
+    
+    void loadGraph(Map<Integer, List<Pair>> graph, int[][] times) {
+        for(int[] time: times) {
+            int source = time[0];
+            Pair dest = new Pair(time[1], time[2]);
+            if(!graph.containsKey(source)) {
+                graph.put(source, new ArrayList<>());
+            }
+            List<Pair> currentList = graph.get(source);
+            currentList.add(dest);
+            graph.put(source, currentList);
         }
     }
     
-    public int networkDelayTime(int[][] times, int n, int k) {
-        int visited[] = new int[n + 1];
-        for(int i = 0; i <= n; i++) {
-            visited[i] = Integer.MAX_VALUE;
-        }
-        int[][] graph = new int[n + 1][n + 1];
-        for(int i = 0; i < (n + 1); i++) {
-            for(int j = 0; j < (n + 1); j++) {
-                graph[i][j] = -1;
+    void doDijkstra(Map<Integer, List<Pair>> graph, Map<Integer, Integer> visited, int src) {
+        Queue<Pair> q = new PriorityQueue<>();
+        q.offer(new Pair(src, 0));
+        
+        while(!q.isEmpty()) {
+            Pair nodeVisited = q.poll();
+            int disSoFar = nodeVisited.weight;
+            if(!visited.containsKey(nodeVisited.node)) {
+                visited.put(nodeVisited.node, disSoFar);
             }
-        }
-        
-        loadGraph(graph, times);
-        
-        // System.out.println("---GRAPH----");
-        // for(int nodes[]: graph) {
-        //     System.out.println(Arrays.toString(nodes));
-        // }
-        visited[k] = 0;
-        
-        Deque<Travel> nodesToVisit = new ArrayDeque<>();
-        nodesToVisit.push(new Travel(k, 0));
-        
-        while(!nodesToVisit.isEmpty()) {
-            Travel currentTravel = nodesToVisit.pop();
-            int dest = currentTravel.d;
-            int travelWeight = currentTravel.t;
-            // System.out.println("Visited " + dest + " weight -> " + travelWeight);
-            visited[dest] = Math.min(visited[dest], travelWeight);
-            
-            int[] nextNodes = graph[dest];
-            for(int d = 0; d <= n; d++) {
-                int dTravelWeight = nextNodes[d];
-                if(dTravelWeight != -1) {
-                    int currentTravelWeight = dTravelWeight + travelWeight;
-                    if(visited[d] == -1 ||  (visited[d] > currentTravelWeight)) {
-                        nodesToVisit.push(new Travel(d, currentTravelWeight));
+            List<Pair> nodesToVisit = graph.get(nodeVisited.node);
+            if(nodesToVisit != null) {
+                for(Pair nodeToVisit: nodesToVisit) {
+                    if(!visited.containsKey(nodeToVisit.node)) {
+                        // System.out.println("add");
+                        q.offer(new Pair(nodeToVisit.node, nodeToVisit.weight + disSoFar));
+                        // visited.put(nodeToVisit.node, nodeToVisit.weight + disSoFar);
                     }
-                    
                 }
             }
         }
-        
-        int ans = 0;
-        
-        // System.out.println("-----Ans-----");
-        // System.out.println(Arrays.toString(visited));
-        
-        for(int i = 1; i <= n; i++) {
-            int num = visited[i];
-            if(num == Integer.MAX_VALUE) {
-                return -1;
-            }
-            ans = Math.max(ans, num);
-        }
-        
-        return ans;
-        
+        return;
     }
     
-    void loadGraph(int[][] graph, int[][] times) {
-        for(int[] time: times) {
-            int from = time[0];
-            int to = time[1];
-            int w = time[2];
-            graph[from][to] = w;
+    class Pair implements Comparable<Pair> {
+        int node;
+        int weight;
+        
+        Pair(int n, int w) {
+            node = n;
+            weight = w;
+        }
+        
+        public String toString() {
+            return "n: " + node + " w: " + weight; 
+        }
+        
+        public int compareTo(Pair p2) {
+            return this.weight - p2.weight;
         }
     }
+    
+    void printGraph(Map<Integer, List<Pair>> graph) {
+        for(int node: graph.keySet()) {
+            System.out.println(node + " -> " + graph.get(node));
+        }
+        System.out.println("****************");
+    }
 }
-/*
-2
-s -> 1, 3
-3
-s -> 1, 3, 4
-
-
-
-
-*/
