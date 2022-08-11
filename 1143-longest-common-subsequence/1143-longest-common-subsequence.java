@@ -8,12 +8,12 @@ class Solution {
                 dp[i][j] = -1;
             }
         }
-        
-        return lcs(text1, text2, 0, 0, dp);
+        return getLcs(text1, text2, 0, 0, dp);
     }
     
-    int lcs(String text1, String text2, int idx1, int idx2, int[][] dp) {
-        if(idx1 >= text1.length() || idx2 >= text2.length()) {
+    int getLcs(String text1, String text2, int idx1, int idx2, int[][] dp) {
+        // int n = text1.length();
+        if((idx1 >= text1.length()) || (idx2 >= text2.length())) {
             return 0;
         }
         if(dp[idx1][idx2] != -1) {
@@ -23,12 +23,17 @@ class Solution {
         char c2 = text2.charAt(idx2);
         int op1 = -1, op2 = -1, op3 = -1;
         if(c1 == c2) {
-            op1 = 1 + lcs(text1, text2, idx1 + 1, idx2 + 1, dp);
+            op1 = 1 + getLcs(text1, text2, idx1 + 1, idx2 + 1, dp);
+        } else {
+            op2 = getLcs(text1, text2, idx1 + 1, idx2, dp);
+            op3 = getLcs(text1, text2, idx1, idx2 + 1, dp);   
         }
-        op2 = lcs(text1, text2, idx1 + 1, idx2, dp);
-        op3 = lcs(text1, text2, idx1, idx2 + 1, dp);
-        int ans = Math.max(op1, Math.max(op2, op3));
-        dp[idx1][idx2] = ans;
-        return ans;
+        int lcs = Math.max(op1, Math.max(op2, op3));
+        dp[idx1][idx2] = lcs;
+        return lcs;
+        
     }
 }
+
+// abcabcdefg
+// abcdefg
